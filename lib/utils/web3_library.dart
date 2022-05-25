@@ -1,9 +1,13 @@
+import 'dart:math';
+
 import 'package:http/http.dart';
 import 'package:magic_wallet/abi/erc20.g.dart';
+import 'package:magic_wallet/abi/uniswapv2router.g.dart';
 import 'package:magic_wallet/utils/secure_storage.dart';
 import 'package:web3dart/crypto.dart';
 import 'package:web3dart/web3dart.dart';
 import 'dart:typed_data';
+
 
 class Web3Library {
   static final web3Client = Web3Client("https://rpc.moonriver.moonbeam.network", Client());
@@ -15,6 +19,18 @@ class Web3Library {
       final token = Erc20(address: EthereumAddress.fromHex(tokenAddress), client: web3Client);
       return token.balanceOf(EthereumAddress.fromHex(walletAddress));
     }
+  }
+
+  static Future<List<BigInt>> getTokenPrice(String routerAddress, List<String> pathString, int decimals){
+    final router = Uniswapv2router(address: EthereumAddress.fromHex(routerAddress), client: web3Client);
+    List<EthereumAddress> path = [];
+    for(var i = 0 ; i < pathString.length ; i++){
+      path.add(EthereumAddress.fromHex(pathString[i]));
+    }
+    if(path.isEmpty){
+      return Future<List<BigInt>>.value([BigInt.from(pow(10, decimals))]);
+    }
+    return router.getAmountsOut$2(BigInt.from(pow(10, decimals)), path, BigInt.from(30));
   }
 
   static BigInt decodeToBigInt(List<int> magnitude) {

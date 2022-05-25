@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -15,13 +16,15 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List _chainTokenList = [];
+  final StreamController<List<dynamic>> _tokenBalanceStreamController = StreamController();
 
   _HomePageState() {
     readChainTokenList();
   }
 
   Future<void> readChainTokenList() async {
-    final String response = await rootBundle.loadString('assets/data/chain_token_list.json');
+    final String response =
+        await rootBundle.loadString('assets/data/chain_token_list.json');
     final data = await json.decode(response);
     setState(() {
       _chainTokenList = data;
@@ -32,7 +35,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     List<Widget> widgetList = <Widget>[
       const ListSubHeadingText("Main"),
-      const TotalBalanceCard(),
+      TotalBalanceCard(_tokenBalanceStreamController),
     ];
     for (var chain in _chainTokenList) {
       int chainId = chain["chain_id"];
@@ -45,8 +48,27 @@ class _HomePageState extends State<HomePage> {
         String tokenSymbol = token["token_symbol"];
         int tokenDecimals = token["token_decimals"];
         String tokenIconUrl = token["token_icon_url"];
+        String routerAddress = token['price_router'];
+        List<dynamic> pathTmp = token['price_path'];
+        List<String> path = [];
+        for (var i = 0; i < pathTmp.length; i++) {
+          path.add(pathTmp[i] as String);
+        }
+        int priceDecimals = token["price_decimals"];
 
-        widgetList.add(ChainTokenBalanceCard(chainId, chainName, chainIconUrl, tokenAddress, tokenSymbol, tokenName, tokenDecimals, tokenIconUrl));
+        widgetList.add(ChainTokenBalanceCard(
+            chainId,
+            chainName,
+            chainIconUrl,
+            tokenAddress,
+            tokenSymbol,
+            tokenName,
+            tokenDecimals,
+            tokenIconUrl,
+            routerAddress,
+            path,
+            priceDecimals,
+            _tokenBalanceStreamController));
       }
     }
 

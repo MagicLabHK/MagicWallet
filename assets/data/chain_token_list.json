@@ -9,35 +9,62 @@
         "token_name": "Moonriver",
         "token_symbol": "MOVR",
         "token_decimals": 18,
-        "token_icon_url": "assets/token_icons/moonriver.png"
+        "token_icon_url": "assets/token_icons/moonriver.png",
+        "price_router": "0xAA30eF758139ae4a7f798112902Bf6d65612045f",
+        "price_path": [
+          "0x98878B06940aE243284CA214f92Bb71a2b032B8A",
+          "0xE3F5a90F9cb311505cd691a46596599aA1A0AD7D"
+        ],
+        "price_decimals": 6
       },
       {
         "token_address": "0x98878B06940aE243284CA214f92Bb71a2b032B8A",
         "token_name": "Wrapped Moonriver",
         "token_symbol": "WMOVR",
         "token_decimals": 18,
-        "token_icon_url": "assets/token_icons/moonriver.png"
+        "token_icon_url": "assets/token_icons/moonriver.png",
+        "price_router": "0xAA30eF758139ae4a7f798112902Bf6d65612045f",
+        "price_path": [
+          "0x98878B06940aE243284CA214f92Bb71a2b032B8A",
+          "0xE3F5a90F9cb311505cd691a46596599aA1A0AD7D"
+        ],
+        "price_decimals": 6
       },
       {
         "token_address": "0x639A647fbe20b6c8ac19E48E2de44ea792c62c5C",
         "token_name": "Ethereum",
         "token_symbol": "ETH",
         "token_decimals": 18,
-        "token_icon_url": "assets/token_icons/ethereum.png"
+        "token_icon_url": "assets/token_icons/ethereum.png",
+        "price_router": "0xAA30eF758139ae4a7f798112902Bf6d65612045f",
+        "price_path": [
+          "0x639A647fbe20b6c8ac19E48E2de44ea792c62c5C",
+          "0xE3F5a90F9cb311505cd691a46596599aA1A0AD7D"
+        ],
+        "price_decimals": 6
       },
       {
         "token_address": "0xE3F5a90F9cb311505cd691a46596599aA1A0AD7D",
         "token_name": "USD Coin",
         "token_symbol": "USDC",
         "token_decimals": 6,
-        "token_icon_url": "assets/token_icons/usd_coin.png"
+        "token_icon_url": "assets/token_icons/usd_coin.png",
+        "price_router": "0xAA30eF758139ae4a7f798112902Bf6d65612045f",
+        "price_path": [],
+        "price_decimals": 6
       },
       {
         "token_address": "0xB44a9B6905aF7c801311e8F4E76932ee959c663C",
         "token_name": "Tether Coin",
         "token_symbol": "USDT",
         "token_decimals": 6,
-        "token_icon_url": "assets/token_icons/tether_usd.png"
+        "token_icon_url": "assets/token_icons/tether_usd.png",
+        "price_router": "0xAA30eF758139ae4a7f798112902Bf6d65612045f",
+        "price_path": [
+          "0xB44a9B6905aF7c801311e8F4E76932ee959c663C",
+          "0xE3F5a90F9cb311505cd691a46596599aA1A0AD7D"
+        ],
+        "price_decimals": 6
       }
     ]
   }
