@@ -87,7 +87,7 @@ class _ChainTokenBalanceCardState extends State<ChainTokenBalanceCard> {
           Padding(
               padding: const EdgeInsets.fromLTRB(0, 0, 25, 0),
               child: FutureBuilder<dynamic>(
-                future: Web3Library.getTokenBalanceByStoragedWalletAddress(
+                future: Web3Library.getTokenBalanceByStorageWalletAddress(
                     widget._tokenAddress),
                 // a previously-obtained Future<String> or null
                 builder:

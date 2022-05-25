@@ -58,7 +58,7 @@ class Web3Library {
     return EthereumAddress.fromPublicKey(privateKeyToPublic(privateKeyInUnsignedInt));
   }
 
-  static Future<dynamic> getTokenBalanceByStoragedWalletAddress(String tokenAddress) async{
+  static Future<dynamic> getTokenBalanceByStorageWalletAddress(String tokenAddress) async{
     final walletAddress = await SecureStorage.getWalletAddress();
     return getTokenBalance(walletAddress!, tokenAddress);
   }
