@@ -7,6 +7,7 @@ import 'package:magic_wallet/utils/secure_storage.dart';
 import 'package:web3dart/crypto.dart';
 import 'package:web3dart/web3dart.dart';
 import 'dart:typed_data';
+import 'package:convert/convert.dart';
 
 
 class Web3Library {
@@ -61,5 +62,16 @@ class Web3Library {
   static Future<dynamic> getTokenBalanceByStorageWalletAddress(String tokenAddress) async{
     final walletAddress = await SecureStorage.getWalletAddress();
     return getTokenBalance(walletAddress!, tokenAddress);
+  }
+
+  static Future<TransactionInformation> getTransactionInformation(String transaction_hash){
+    return web3Client.getTransactionByHash(transaction_hash);
+  }
+
+  static Map<String, dynamic> parseTokenTransferInputData(Uint8List input){
+    return {
+      "toAddress": EthereumAddress.fromHex(hex.encode(input.sublist(16, 36))).hexEip55,
+      "amount": BigInt.parse(hex.encode(input.sublist(36, 68)), radix: 16)
+    };
   }
 }

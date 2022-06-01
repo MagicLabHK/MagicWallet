@@ -59,6 +59,7 @@ dev_dependencies:
 flutter:
   assets:
     - assets/chain_token_list.json
+    - assets/sample_tx_history.json
     - assets/token_icons/
 
   # The following line ensures that the Material Icons font is
