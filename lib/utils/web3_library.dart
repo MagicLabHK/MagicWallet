@@ -68,6 +68,10 @@ class Web3Library {
     return web3Client.getTransactionByHash(transaction_hash);
   }
 
+  static Future<TransactionReceipt?> getTransactionReceipt(String transaction_hash){
+    return web3Client.getTransactionReceipt(transaction_hash);
+  }
+
   static Map<String, dynamic> parseTokenTransferInputData(Uint8List input){
     return {
       "toAddress": EthereumAddress.fromHex(hex.encode(input.sublist(16, 36))).hexEip55,
