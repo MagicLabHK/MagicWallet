@@ -3,9 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:magic_wallet/utils/secure_storage.dart';
 import 'package:magic_wallet/utils/web3_library.dart';
-import 'package:web3dart/web3dart.dart';
 
-import '../utils/logger.dart';
 
 class TransferTokenDialog extends StatefulWidget {
   final int _chainId;
@@ -118,7 +116,6 @@ class _TransferTokenDialogState extends State<TransferTokenDialog> {
                           height: 50,
                           child: RawMaterialButton(
                             onPressed: () {
-                              SecureStorage.addTransactionRecord(widget._chainId.toString(), widget._tokenAddress, "0xf48174e2e196da443d450fedd4792e66b23dcab605624b54427645e389599ba0");
                               if (_formKey.currentState!.validate()) {
                                 // If the form is valid, display a snackbar. In the real world,
                                 // you'd often call a server or save the information in a database.

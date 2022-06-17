@@ -1,12 +1,10 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:magic_wallet/dialogs/dialog_transfer_token.dart';
 import 'package:magic_wallet/utils/secure_storage.dart';
 import 'package:magic_wallet/widgets/card_transaction_history.dart';
 
-import '../utils/logger.dart';
 import '../widgets/card_chain_token_balance.dart';
 import '../widgets/text_list_sub_heading.dart';
 

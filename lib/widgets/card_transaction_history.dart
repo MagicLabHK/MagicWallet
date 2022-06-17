@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:magic_wallet/utils/web3_library.dart';
 import 'package:web3dart/web3dart.dart';
 
-import '../utils/logger.dart';
 
 class TransactionHistoryCard extends StatefulWidget {
   final String _transaction_hash;
