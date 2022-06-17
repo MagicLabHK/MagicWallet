@@ -19,21 +19,11 @@ class ChainTokenBalanceCard extends StatefulWidget {
   final List<String> _path;
   final int _flatDecimals;
   final StreamController<List<dynamic>>? _tokenBalanceStreamController;
+  final bool clickable;
 
-  const ChainTokenBalanceCard(
-      this._chainId,
-      this._chainName,
-      this._chainIconUrl,
-      this._tokenAddress,
-      this._tokenSymbol,
-      this._tokenName,
-      this._tokenDecimals,
-      this._tokenIconUrl,
-      this._routerAddress,
-      this._path,
-      this._flatDecimals,
-      this._tokenBalanceStreamController,
-      {Key? key})
+  const ChainTokenBalanceCard(this._chainId, this._chainName, this._chainIconUrl, this._tokenAddress, this._tokenSymbol, this._tokenName, this._tokenDecimals,
+      this._tokenIconUrl, this._routerAddress, this._path, this._flatDecimals, this._tokenBalanceStreamController,
+      {Key? key, this.clickable = true})
       : super(key: key);
 
   @override
@@ -49,22 +39,25 @@ class _ChainTokenBalanceCardState extends State<ChainTokenBalanceCard> {
   Widget build(BuildContext context) {
     return GestureDetector(
         onTap: () => {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => TokenTransferPage(
-                            widget._chainId,
-                            widget._chainName,
-                            widget._chainIconUrl,
-                            widget._tokenAddress,
-                            widget._tokenSymbol,
-                            widget._tokenName,
-                            widget._tokenDecimals,
-                            widget._tokenIconUrl,
-                            widget._routerAddress,
-                            widget._path,
-                            widget._flatDecimals,
-                          )))
+              if (widget.clickable)
+                {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => TokenTransferPage(
+                                widget._chainId,
+                                widget._chainName,
+                                widget._chainIconUrl,
+                                widget._tokenAddress,
+                                widget._tokenSymbol,
+                                widget._tokenName,
+                                widget._tokenDecimals,
+                                widget._tokenIconUrl,
+                                widget._routerAddress,
+                                widget._path,
+                                widget._flatDecimals,
+                              )))
+                }
             },
         child: Card(
           shape: const RoundedRectangleBorder(
@@ -75,10 +68,7 @@ class _ChainTokenBalanceCardState extends State<ChainTokenBalanceCard> {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              Padding(
-                  padding: const EdgeInsets.all(25.0),
-                  child: SizedBox(
-                      child: Image.asset(widget._tokenIconUrl), width: 32)),
+              Padding(padding: const EdgeInsets.all(25.0), child: SizedBox(child: Image.asset(widget._tokenIconUrl), width: 32)),
               Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -88,34 +78,25 @@ class _ChainTokenBalanceCardState extends State<ChainTokenBalanceCard> {
                     child: Align(
                         alignment: const FractionalOffset(0, 0),
                         child: Text(widget._tokenSymbol,
-                            style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Color.fromARGB(255, 96, 96, 96),
-                                fontSize: 20))),
+                            style: const TextStyle(fontWeight: FontWeight.bold, color: Color.fromARGB(255, 96, 96, 96), fontSize: 20))),
                   ),
                   Padding(
                       padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
                       child: Align(
                           alignment: const FractionalOffset(0, 0),
-                          child: Text(widget._tokenName,
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.grey))))
+                          child: Text(widget._tokenName, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.grey))))
                 ],
               ),
               const Spacer(),
               Padding(
                   padding: const EdgeInsets.fromLTRB(0, 0, 25, 0),
                   child: FutureBuilder<dynamic>(
-                    future: Web3Library.getTokenBalanceByStorageWalletAddress(
-                        widget._tokenAddress),
+                    future: Web3Library.getTokenBalanceByStorageWalletAddress(widget._tokenAddress),
                     // a previously-obtained Future<String> or null
-                    builder: (BuildContext context,
-                        AsyncSnapshot<dynamic> snapshot) {
+                    builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
                       if (snapshot.hasData) {
                         if (snapshot.data is EtherAmount) {
-                          _tokenBalance =
-                              (snapshot.data! as EtherAmount).getInWei;
+                          _tokenBalance = (snapshot.data! as EtherAmount).getInWei;
                         } else {
                           _tokenBalance = snapshot.data!;
                         }
@@ -128,51 +109,26 @@ class _ChainTokenBalanceCardState extends State<ChainTokenBalanceCard> {
                             padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
                             child: Align(
                                 alignment: const FractionalOffset(0, 0),
-                                child: Text(
-                                    (_tokenBalance /
-                                            BigInt.from(
-                                                pow(10, widget._tokenDecimals)))
-                                        .toStringAsFixed(4),
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: Color.fromARGB(255, 96, 96, 96),
-                                        fontSize: 20))),
+                                child: Text((_tokenBalance / BigInt.from(pow(10, widget._tokenDecimals))).toStringAsFixed(4),
+                                    style: const TextStyle(fontWeight: FontWeight.bold, color: Color.fromARGB(255, 96, 96, 96), fontSize: 20))),
                           ),
                           FutureBuilder<List<BigInt>>(
-                              future: Web3Library.getTokenPrice(
-                                  widget._routerAddress,
-                                  widget._path,
-                                  widget._tokenDecimals),
-                              builder: (BuildContext context,
-                                  AsyncSnapshot<List<BigInt>> snapshot) {
+                              future: Web3Library.getTokenPrice(widget._routerAddress, widget._path, widget._tokenDecimals),
+                              builder: (BuildContext context, AsyncSnapshot<List<BigInt>> snapshot) {
                                 if (snapshot.hasData) {
-                                  _tokenPrice =
-                                      snapshot.data![snapshot.data!.length - 1];
+                                  _tokenPrice = snapshot.data![snapshot.data!.length - 1];
                                 } else {
                                   _tokenPrice = BigInt.zero;
                                 }
-                                _tokenUsdBalance = _tokenBalance /
-                                    BigInt.from(
-                                        pow(10, widget._tokenDecimals)) *
-                                    _tokenPrice.toDouble() /
-                                    pow(10, widget._flatDecimals);
-                                widget._tokenBalanceStreamController?.sink.add([
-                                  widget._chainId.toString() +
-                                      widget._tokenAddress,
-                                  _tokenUsdBalance
-                                ]);
+                                _tokenUsdBalance =
+                                    _tokenBalance / BigInt.from(pow(10, widget._tokenDecimals)) * _tokenPrice.toDouble() / pow(10, widget._flatDecimals);
+                                widget._tokenBalanceStreamController?.sink.add([widget._chainId.toString() + widget._tokenAddress, _tokenUsdBalance]);
                                 return Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                                    padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
                                     child: Align(
                                         alignment: const FractionalOffset(0, 0),
-                                        child: Text(
-                                            "\$" +
-                                                _tokenUsdBalance
-                                                    .toStringAsFixed(4),
-                                            style: const TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.grey))));
+                                        child: Text("\$" + _tokenUsdBalance.toStringAsFixed(4),
+                                            style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.grey))));
                               })
                         ],
                       );

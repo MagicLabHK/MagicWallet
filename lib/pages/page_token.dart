@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:magic_wallet/dialogs/dialog_transfer_token.dart';
+import 'package:magic_wallet/utils/secure_storage.dart';
 import 'package:magic_wallet/widgets/card_transaction_history.dart';
 
 import '../utils/logger.dart';
@@ -38,8 +40,8 @@ class _TokenTransferPageState extends State<TokenTransferPage> {
   }
 
   Future<void> readChainTokenList() async {
-    final String response = await rootBundle.loadString('assets/data/sample_tx_history.json');
-    final Map<String, dynamic> data = await json.decode(response);
+    final String? response = await SecureStorage.readTransactionHistory();
+    final Map<String, dynamic> data = await json.decode(response!);
     setState(() {
       if (data.containsKey(widget._chainId.toString())) {
         if (data[widget._chainId.toString()][widget._tokenAddress] != null) {
@@ -53,8 +55,21 @@ class _TokenTransferPageState extends State<TokenTransferPage> {
   Widget build(BuildContext context) {
     List<Widget> widgetList = <Widget>[
       ListSubHeadingText(widget._chainName),
-      ChainTokenBalanceCard(widget._chainId, widget._chainName, widget._chainIconUrl, widget._tokenAddress, widget._tokenSymbol, widget._tokenName,
-          widget._tokenDecimals, widget._tokenIconUrl, widget._routerAddress, widget._path, widget._priceDecimals, null),
+      ChainTokenBalanceCard(
+        widget._chainId,
+        widget._chainName,
+        widget._chainIconUrl,
+        widget._tokenAddress,
+        widget._tokenSymbol,
+        widget._tokenName,
+        widget._tokenDecimals,
+        widget._tokenIconUrl,
+        widget._routerAddress,
+        widget._path,
+        widget._priceDecimals,
+        null,
+        clickable: false,
+      ),
       const ListSubHeadingText("Transaction History"),
     ];
 
@@ -95,22 +110,20 @@ class _TokenTransferPageState extends State<TokenTransferPage> {
                 onPressed: () {
                   showModalBottomSheet<void>(
                     context: context,
+                    isScrollControlled: true,
                     builder: (BuildContext context) {
-                      return Container(
-                        color: Colors.white,
-                        child: Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              const Text('Send Token Dialog'),
-                              ElevatedButton(
-                                child: const Text('Cancel'),
-                                onPressed: () => Navigator.pop(context),
-                              )
-                            ],
-                          ),
-                        ),
+                      return TransferTokenDialog(
+                        widget._chainId,
+                        widget._chainName,
+                        widget._chainIconUrl,
+                        widget._tokenAddress,
+                        widget._tokenSymbol,
+                        widget._tokenName,
+                        widget._tokenDecimals,
+                        widget._tokenIconUrl,
+                        widget._routerAddress,
+                        widget._path,
+                        widget._priceDecimals,
                       );
                     },
                   );

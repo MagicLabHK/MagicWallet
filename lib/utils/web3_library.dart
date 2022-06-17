@@ -9,7 +9,6 @@ import 'package:web3dart/web3dart.dart';
 import 'dart:typed_data';
 import 'package:convert/convert.dart';
 
-
 class Web3Library {
   static final web3Client = Web3Client("https://rpc.moonriver.moonbeam.network", Client());
 
@@ -22,13 +21,13 @@ class Web3Library {
     }
   }
 
-  static Future<List<BigInt>> getTokenPrice(String routerAddress, List<String> pathString, int decimals){
+  static Future<List<BigInt>> getTokenPrice(String routerAddress, List<String> pathString, int decimals) {
     final router = Uniswapv2router(address: EthereumAddress.fromHex(routerAddress), client: web3Client);
     List<EthereumAddress> path = [];
-    for(var i = 0 ; i < pathString.length ; i++){
+    for (var i = 0; i < pathString.length; i++) {
       path.add(EthereumAddress.fromHex(pathString[i]));
     }
-    if(path.isEmpty){
+    if (path.isEmpty) {
       return Future<List<BigInt>>.value([BigInt.from(pow(10, decimals))]);
     }
     return router.getAmountsOut$2(BigInt.from(pow(10, decimals)), path, BigInt.from(30));
@@ -59,23 +58,31 @@ class Web3Library {
     return EthereumAddress.fromPublicKey(privateKeyToPublic(privateKeyInUnsignedInt));
   }
 
-  static Future<dynamic> getTokenBalanceByStorageWalletAddress(String tokenAddress) async{
+  static Future<dynamic> getTokenBalanceByStorageWalletAddress(String tokenAddress) async {
     final walletAddress = await SecureStorage.getWalletAddress();
     return getTokenBalance(walletAddress!, tokenAddress);
   }
 
-  static Future<TransactionInformation> getTransactionInformation(String transaction_hash){
+  static Future<TransactionInformation> getTransactionInformation(String transaction_hash) {
     return web3Client.getTransactionByHash(transaction_hash);
   }
 
-  static Future<TransactionReceipt?> getTransactionReceipt(String transaction_hash){
+  static Future<TransactionReceipt?> getTransactionReceipt(String transaction_hash) {
     return web3Client.getTransactionReceipt(transaction_hash);
   }
 
-  static Map<String, dynamic> parseTokenTransferInputData(Uint8List input){
+  static Map<String, dynamic> parseTokenTransferInputData(Uint8List input) {
     return {
       "toAddress": EthereumAddress.fromHex(hex.encode(input.sublist(16, 36))).hexEip55,
       "amount": BigInt.parse(hex.encode(input.sublist(36, 68)), radix: 16)
     };
+  }
+
+  static Future<EtherAmount> getNetworkGasPrice() {
+    return web3Client.getGasPrice();
+  }
+
+  static Future<BigInt> estimateGas(String senderAddress, String receiverAddress, String tokenAddress) {
+    return web3Client.estimateGas(sender: EthereumAddress.fromHex(senderAddress), to: EthereumAddress.fromHex(receiverAddress), value: EtherAmount.zero());
   }
 }
