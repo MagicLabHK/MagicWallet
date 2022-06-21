@@ -85,4 +85,18 @@ class Web3Library {
   static Future<BigInt> estimateGas(String senderAddress, String receiverAddress, String tokenAddress) {
     return web3Client.estimateGas(sender: EthereumAddress.fromHex(senderAddress), to: EthereumAddress.fromHex(receiverAddress), value: EtherAmount.zero());
   }
+
+  static Future<String> sendToken(String senderAddress, String privateKey, String toAddress, String tokenAddress, BigInt amount,
+      BigInt gas, BigInt gasPrice, int chainId) {
+    Transaction transaction = Transaction(
+        from: EthereumAddress.fromHex(senderAddress),
+        to: EthereumAddress.fromHex(toAddress),
+        maxGas: gas.toInt(),
+        gasPrice: EtherAmount.inWei(gasPrice),
+        value: EtherAmount.inWei(amount));
+
+    return web3Client
+        .signTransaction(EthPrivateKey.fromHex(privateKey), transaction, chainId: chainId)
+        .then((signedTransaction) => web3Client.sendRawTransaction(signedTransaction));
+  }
 }

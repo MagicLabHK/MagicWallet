@@ -16,6 +16,10 @@ class SecureStorage {
     return storage.read(key: "wallet_address");
   }
 
+  static Future<String?> getWalletPrivateKey(){
+    return storage.read(key: "wallet_private_key");
+  }
+
   static addTransactionRecord(String chainId, String tokenAddress, String txHash){
     storage.read(key: "transaction_history").then((transactionHistoryMap) {
       if(transactionHistoryMap == null){

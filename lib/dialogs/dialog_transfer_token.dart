@@ -6,6 +6,7 @@ import 'package:magic_wallet/utils/secure_storage.dart';
 import 'package:magic_wallet/utils/web3_library.dart';
 
 import '../utils/custom_keyboard.dart';
+import '../utils/logger.dart';
 
 class TransferTokenDialog extends StatefulWidget {
   final int _chainId;
@@ -31,6 +32,8 @@ class TransferTokenDialog extends StatefulWidget {
 
 class _TransferTokenDialogState extends State<TransferTokenDialog> {
   final _formKey = GlobalKey<FormState>();
+  final _toAddressFieldController = TextEditingController();
+  final _amountFieldController = TextEditingController();
   final _gasPriceTextFieldController = TextEditingController();
   final _gasLimitTextFieldController = TextEditingController();
 
@@ -39,6 +42,7 @@ class _TransferTokenDialogState extends State<TransferTokenDialog> {
     Web3Library.getNetworkGasPrice().then((value) => _gasPriceTextFieldController.text = (value.getInWei / BigInt.from(pow(10, 9))).toStringAsFixed(4));
     SecureStorage.getWalletAddress().then((walletAddress) => Web3Library.estimateGas(walletAddress!, walletAddress, widget._tokenAddress)
         .then((gasLimit) => _gasLimitTextFieldController.text = gasLimit.toString()));
+    _amountFieldController.text = "0";
 
     return Container(
         height: MediaQuery.of(context).size.height * 0.8,
@@ -62,6 +66,7 @@ class _TransferTokenDialogState extends State<TransferTokenDialog> {
                       Padding(
                           padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
                           child: TextFormField(
+                            controller: _toAddressFieldController,
                             decoration: InputDecoration(
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10.0),
@@ -74,7 +79,7 @@ class _TransferTokenDialogState extends State<TransferTokenDialog> {
                       Padding(
                           padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
                           child: TextFormField(
-                            initialValue: "0",
+                            controller: _amountFieldController,
                             keyboardType: const TextInputType.numberWithOptions(decimal: true),
                             focusNode: CustomKeyboard.numericKeyboard,
                             textInputAction: TextInputAction.done,
@@ -130,10 +135,26 @@ class _TransferTokenDialogState extends State<TransferTokenDialog> {
                                   if (_formKey.currentState!.validate()) {
                                     // If the form is valid, display a snackbar. In the real world,
                                     // you'd often call a server or save the information in a database.
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(content: Text('Processing Data')),
-                                    );
                                   }
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text('Transaction Sent')),
+                                  );
+                                  Navigator.pop(context);
+
+                                  Future.wait<String?>([SecureStorage.getWalletAddress(), SecureStorage.getWalletPrivateKey()])
+                                      .then((wallet) => Web3Library.sendToken(
+                                          wallet[0]!,
+                                          wallet[1]!,
+                                          _toAddressFieldController.text,
+                                          widget._tokenAddress,
+                                          BigInt.from(double.parse(_amountFieldController.text) * pow(10, widget._tokenDecimals)),
+                                          BigInt.from(int.parse(_gasLimitTextFieldController.text)),
+                                          BigInt.from(double.parse(_gasPriceTextFieldController.text) * pow(10, 9)), // from Wei to GWei
+                                          widget._chainId))
+                                      .then((txHash) {
+                                    SecureStorage.addTransactionRecord(widget._chainId.toString(), widget._tokenAddress, txHash);
+                                    Logger.printConsoleLog(txHash);
+                                  });
                                 },
                                 elevation: 2.0,
                                 fillColor: Colors.lightBlue,
