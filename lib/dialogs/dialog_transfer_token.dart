@@ -48,7 +48,7 @@ class _TransferTokenDialogState extends State<TransferTokenDialog> {
         height: MediaQuery.of(context).size.height * 0.8,
         color: Colors.white,
         child: KeyboardActions(
-          config: CustomKeyboard.buildNumericKeyboardConfig(context),
+          config: CustomKeyboard.buildSendTokenKeyboardConfig(context),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
@@ -67,6 +67,7 @@ class _TransferTokenDialogState extends State<TransferTokenDialog> {
                           padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
                           child: TextFormField(
                             controller: _toAddressFieldController,
+                            focusNode: CustomKeyboard.sendTokenToAddressNode,
                             decoration: InputDecoration(
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10.0),
@@ -81,7 +82,7 @@ class _TransferTokenDialogState extends State<TransferTokenDialog> {
                           child: TextFormField(
                             controller: _amountFieldController,
                             keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                            focusNode: CustomKeyboard.numericKeyboard,
+                            focusNode: CustomKeyboard.sendTokenAmountNode,
                             textInputAction: TextInputAction.done,
                             decoration: InputDecoration(
                                 suffixText: widget._tokenSymbol,
@@ -98,7 +99,7 @@ class _TransferTokenDialogState extends State<TransferTokenDialog> {
                           child: TextFormField(
                             controller: _gasPriceTextFieldController,
                             keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                            focusNode: CustomKeyboard.numericKeyboard,
+                            focusNode: CustomKeyboard.sendTokenGasPriceNode,
                             decoration: InputDecoration(
                                 suffixText: "Gwei",
                                 border: OutlineInputBorder(
@@ -114,7 +115,7 @@ class _TransferTokenDialogState extends State<TransferTokenDialog> {
                           child: TextFormField(
                             controller: _gasLimitTextFieldController,
                             keyboardType: TextInputType.number,
-                            focusNode: CustomKeyboard.numericKeyboard,
+                            focusNode: CustomKeyboard.sendTokenGasNode,
                             decoration: InputDecoration(
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10.0),
