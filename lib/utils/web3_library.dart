@@ -9,6 +9,7 @@ import 'package:web3dart/web3dart.dart';
 import 'dart:typed_data';
 import 'package:convert/convert.dart';
 
+
 class Web3Library {
   static final web3Client = Web3Client("https://rpc.moonriver.moonbeam.network", Client());
 
@@ -83,20 +84,47 @@ class Web3Library {
   }
 
   static Future<BigInt> estimateGas(String senderAddress, String receiverAddress, String tokenAddress) {
-    return web3Client.estimateGas(sender: EthereumAddress.fromHex(senderAddress), to: EthereumAddress.fromHex(receiverAddress), value: EtherAmount.zero());
+    if (tokenAddress == "0x0000000000000000000000000000000000000000") {
+      return web3Client.estimateGas(sender: EthereumAddress.fromHex(senderAddress), to: EthereumAddress.fromHex(receiverAddress), value: EtherAmount.zero());
+    } else {
+      // Transfer function ABI
+      final contractAbi = ContractAbi.fromJson(
+          '[{"constant": false,"inputs": [{"internalType": "address","name": "recipient","type": "address"},{"internalType": "uint256","name": "amount","type": "uint256"}],"name": "transfer","outputs": [{"internalType": "bool","name": "","type": "bool"}],"payable": false,"stateMutability": "nonpayable","type": "function"}]',
+          'Erc20');
+      final contract = DeployedContract(contractAbi, EthereumAddress.fromHex(tokenAddress));
+      final transferFunction = contractAbi.functions[0];
+      final transaction = Transaction.callContract(
+        contract: contract,
+        function: transferFunction,
+        parameters: [
+          EthereumAddress.fromHex(receiverAddress),
+          BigInt.from(1),
+        ],
+      );
+
+      return web3Client.estimateGas(
+          sender: EthereumAddress.fromHex(senderAddress), to: EthereumAddress.fromHex(tokenAddress), value: transaction.value, data: transaction.data);
+    }
   }
 
-  static Future<String> sendToken(String senderAddress, String privateKey, String toAddress, String tokenAddress, BigInt amount,
-      BigInt gas, BigInt gasPrice, int chainId) {
-    Transaction transaction = Transaction(
-        from: EthereumAddress.fromHex(senderAddress),
-        to: EthereumAddress.fromHex(toAddress),
-        maxGas: gas.toInt(),
-        gasPrice: EtherAmount.inWei(gasPrice),
-        value: EtherAmount.inWei(amount));
+  static Future<String> sendToken(
+      String senderAddress, String privateKey, String toAddress, String tokenAddress, BigInt amount, BigInt gas, BigInt gasPrice, int chainId) {
+    Transaction transaction;
+    if (tokenAddress == "0x0000000000000000000000000000000000000000") {
+      transaction = Transaction(
+          from: EthereumAddress.fromHex(senderAddress),
+          to: EthereumAddress.fromHex(toAddress),
+          maxGas: gas.toInt(),
+          gasPrice: EtherAmount.inWei(gasPrice),
+          value: EtherAmount.inWei(amount));
 
-    return web3Client
-        .signTransaction(EthPrivateKey.fromHex(privateKey), transaction, chainId: chainId)
-        .then((signedTransaction) => web3Client.sendRawTransaction(signedTransaction));
+      return web3Client
+          .signTransaction(EthPrivateKey.fromHex(privateKey), transaction, chainId: chainId)
+          .then((signedTransaction) => web3Client.sendRawTransaction(signedTransaction));
+    } else {
+      final token = Erc20(address: EthereumAddress.fromHex(tokenAddress), client: web3Client);
+      return token.transfer(EthereumAddress.fromHex(toAddress), amount,
+          credentials: EthPrivateKey.fromHex(privateKey), transaction: Transaction(maxGas: gas.toInt(), gasPrice: EtherAmount.inWei(gasPrice)));
+    }
   }
 }

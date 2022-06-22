@@ -134,8 +134,7 @@ class _TransferTokenDialogState extends State<TransferTokenDialog> {
                               child: RawMaterialButton(
                                 onPressed: () {
                                   if (_formKey.currentState!.validate()) {
-                                    // If the form is valid, display a snackbar. In the real world,
-                                    // you'd often call a server or save the information in a database.
+                                    // TODO transfer token form validation
                                   }
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(content: Text('Transaction Sent')),
