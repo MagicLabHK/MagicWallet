@@ -3,11 +3,12 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:magic_wallet/pages/page_token.dart';
-import 'package:magic_wallet/utils/web3_library.dart';
 import 'package:web3dart/web3dart.dart';
 
+import '../chain_wrapper/chain_wrapper.dart';
+
 class ChainTokenBalanceCard extends StatefulWidget {
-  final int _chainId;
+  final String _chainId;
   final String _chainName;
   final String _chainIconUrl;
   final String _tokenAddress;
@@ -91,7 +92,7 @@ class _ChainTokenBalanceCardState extends State<ChainTokenBalanceCard> {
               Padding(
                   padding: const EdgeInsets.fromLTRB(0, 0, 25, 0),
                   child: FutureBuilder<dynamic>(
-                    future: Web3Library.getTokenBalanceByStorageWalletAddress(widget._tokenAddress),
+                    future: ChainWrapper.getTokenBalanceByStorageWalletAddress(widget._chainName, widget._tokenAddress),
                     // a previously-obtained Future<String> or null
                     builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
                       if (snapshot.hasData) {
@@ -109,14 +110,14 @@ class _ChainTokenBalanceCardState extends State<ChainTokenBalanceCard> {
                             padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
                             child: Align(
                                 alignment: const FractionalOffset(0, 0),
-                                child: Text((_tokenBalance / BigInt.from(pow(10, widget._tokenDecimals))).toStringAsFixed(4),
+                                child: Text((_tokenBalance / BigInt.from(10).pow(widget._tokenDecimals)).toStringAsFixed(4),
                                     style: const TextStyle(fontWeight: FontWeight.bold, color: Color.fromARGB(255, 96, 96, 96), fontSize: 20))),
                           ),
-                          FutureBuilder<List<BigInt>>(
-                              future: Web3Library.getTokenPrice(widget._routerAddress, widget._path, widget._tokenDecimals),
-                              builder: (BuildContext context, AsyncSnapshot<List<BigInt>> snapshot) {
+                          FutureBuilder<BigInt>(
+                              future: ChainWrapper.getTokenPrice(widget._chainName, widget._routerAddress, widget._path, widget._tokenDecimals),
+                              builder: (BuildContext context, AsyncSnapshot<BigInt> snapshot) {
                                 if (snapshot.hasData) {
-                                  _tokenPrice = snapshot.data![snapshot.data!.length - 1];
+                                  _tokenPrice = snapshot.data!;
                                 } else {
                                   _tokenPrice = BigInt.zero;
                                 }

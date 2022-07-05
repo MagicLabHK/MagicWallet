@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:magic_wallet/utils/constant.dart';
 import 'package:magic_wallet/utils/secure_storage.dart';
 import 'package:settings_ui/settings_ui.dart';
 
@@ -18,7 +19,7 @@ class SettingsPage extends StatelessWidget {
           tiles: <SettingsTile>[
             SettingsTile(
               leading: Icon(Icons.key),
-              title: Text('Private Key'),
+              title: Text('EVM Private Key'),
               onPressed: (BuildContext context) {
                 showDialog(context: context, builder: (BuildContext context) => AlertDialog(
                   title: const Text('Private Key'),
@@ -36,7 +37,7 @@ class SettingsPage extends StatelessWidget {
                     TextButton(
                       onPressed: () {
                         log(privateKeyFieldController.text);
-                        SecureStorage.updatePrivateKey(privateKeyFieldController.text);
+                        SecureStorage.updatePrivateKey(Constant.chainMoonriver, privateKeyFieldController.text);
                         Navigator.pop(context, 'OK');
                       },
                       child: const Text('OK'),
@@ -45,6 +46,34 @@ class SettingsPage extends StatelessWidget {
                 ));
               },
             ),
+            SettingsTile(
+              leading: Icon(Icons.key),
+              title: Text('Near Wallet Account'),
+              onPressed: (BuildContext context) {
+                showDialog(context: context, builder: (BuildContext context) => AlertDialog(
+                  title: const Text('Near Wallet Account'),
+                  content: TextField(
+                    controller: privateKeyFieldController,
+                    decoration: InputDecoration(hintText: 'Enter Near Wallet Account'),
+                    maxLength: 64,
+                  ),
+                  actions: <Widget>[
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, 'Cancel'),
+                      child: const Text('Cancel'),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        log(privateKeyFieldController.text);
+                        SecureStorage.updateNearWalletAccount(privateKeyFieldController.text);
+                        Navigator.pop(context, 'OK');
+                      },
+                      child: const Text('OK'),
+                    ),
+                  ],
+                ));
+              },
+            )
           ],
         ),
       ],

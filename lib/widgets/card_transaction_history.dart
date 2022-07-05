@@ -2,16 +2,17 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:magic_wallet/utils/web3_library.dart';
+import 'package:magic_wallet/chain_wrapper/chain_wrapper.dart';
+import 'package:magic_wallet/chain_wrapper/web3_wrapper.dart';
 import 'package:web3dart/web3dart.dart';
-
 
 class TransactionHistoryCard extends StatefulWidget {
   final String _transaction_hash;
   final int _tokenDecimals;
   final String _tokenAddress;
+  final String _chainName;
 
-  const TransactionHistoryCard(this._transaction_hash, this._tokenDecimals, this._tokenAddress, {Key? key}) : super(key: key);
+  const TransactionHistoryCard(this._transaction_hash, this._tokenDecimals, this._tokenAddress, this._chainName, {Key? key}) : super(key: key);
 
   @override
   State<TransactionHistoryCard> createState() => _TransactionHistoryCardState();
@@ -27,14 +28,17 @@ class _TransactionHistoryCardState extends State<TransactionHistoryCard> {
         ),
       ),
       child: FutureBuilder<List<dynamic>>(
-          future: Future.wait([Web3Library.getTransactionInformation(widget._transaction_hash), Web3Library.getTransactionReceipt(widget._transaction_hash)]),
+          future: Future.wait([
+            ChainWrapper.getTransactionInformation(widget._chainName, widget._transaction_hash),
+            ChainWrapper.getTransactionReceipt(widget._chainName, widget._transaction_hash)
+          ]),
           builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
             if (snapshot.hasData && snapshot.data.length > 0) {
               final TransactionInformation transactionInformation = snapshot.data[0];
               final TransactionReceipt? transactionReceipt = snapshot.data[1];
               Map<String, dynamic> transactionInput;
               if (widget._tokenAddress != "0x0000000000000000000000000000000000000000") {
-                transactionInput = Web3Library.parseTokenTransferInputData(transactionInformation.input);
+                transactionInput = ChainWrapper.parseTokenTransferInputData(widget._chainName, transactionInformation.input);
               } else {
                 transactionInput = {"toAddress": transactionInformation.to?.hexEip55, "amount": transactionInformation.value.getInWei};
               }

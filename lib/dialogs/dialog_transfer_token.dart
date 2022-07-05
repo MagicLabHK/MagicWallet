@@ -3,13 +3,13 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
 import 'package:magic_wallet/utils/secure_storage.dart';
-import 'package:magic_wallet/utils/web3_library.dart';
 
+import '../chain_wrapper/chain_wrapper.dart';
 import '../utils/custom_keyboard.dart';
 import '../utils/logger.dart';
 
 class TransferTokenDialog extends StatefulWidget {
-  final int _chainId;
+  final String _chainId;
   final String _chainName;
   final String _chainIconUrl;
   final String _tokenAddress;
@@ -39,8 +39,9 @@ class _TransferTokenDialogState extends State<TransferTokenDialog> {
 
   @override
   Widget build(BuildContext context) {
-    Web3Library.getNetworkGasPrice().then((value) => _gasPriceTextFieldController.text = (value.getInWei / BigInt.from(pow(10, 9))).toStringAsFixed(4));
-    SecureStorage.getWalletAddress().then((walletAddress) => Web3Library.estimateGas(walletAddress!, walletAddress, widget._tokenAddress)
+    ChainWrapper.getNetworkGasPrice(widget._chainName)
+        .then((value) => _gasPriceTextFieldController.text = (value.getInWei / BigInt.from(pow(10, 9))).toStringAsFixed(4));
+    SecureStorage.getWalletAddress().then((walletAddress) => ChainWrapper.estimateGas(widget._chainName, walletAddress!, walletAddress, widget._tokenAddress)
         .then((gasLimit) => _gasLimitTextFieldController.text = gasLimit.toString()));
     _amountFieldController.text = "0";
 
@@ -142,15 +143,17 @@ class _TransferTokenDialogState extends State<TransferTokenDialog> {
                                   Navigator.pop(context);
 
                                   Future.wait<String?>([SecureStorage.getWalletAddress(), SecureStorage.getWalletPrivateKey()])
-                                      .then((wallet) => Web3Library.sendToken(
+                                      .then((wallet) => ChainWrapper.sendToken(
+                                          widget._chainName,
                                           wallet[0]!,
                                           wallet[1]!,
                                           _toAddressFieldController.text,
                                           widget._tokenAddress,
                                           BigInt.from(double.parse(_amountFieldController.text) * pow(10, widget._tokenDecimals)),
                                           BigInt.from(int.parse(_gasLimitTextFieldController.text)),
-                                          BigInt.from(double.parse(_gasPriceTextFieldController.text) * pow(10, 9)), // from Wei to GWei
-                                          widget._chainId))
+                                          BigInt.from(double.parse(_gasPriceTextFieldController.text) * pow(10, 9)),
+                                          // from Wei to GWei
+                                          int.parse(widget._chainId)))
                                       .then((txHash) {
                                     SecureStorage.addTransactionRecord(widget._chainId.toString(), widget._tokenAddress, txHash);
                                     Logger.printConsoleLog(txHash);

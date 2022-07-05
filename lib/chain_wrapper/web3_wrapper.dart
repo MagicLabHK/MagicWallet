@@ -9,8 +9,7 @@ import 'package:web3dart/web3dart.dart';
 import 'dart:typed_data';
 import 'package:convert/convert.dart';
 
-
-class Web3Library {
+class Web3Wrapper {
   static final web3Client = Web3Client("https://rpc.moonriver.moonbeam.network", Client());
 
   static Future<dynamic> getTokenBalance(String walletAddress, String tokenAddress) {
@@ -22,16 +21,16 @@ class Web3Library {
     }
   }
 
-  static Future<List<BigInt>> getTokenPrice(String routerAddress, List<String> pathString, int decimals) {
+  static Future<BigInt> getTokenPrice(String routerAddress, List<String> pathString, int decimals) {
     final router = Uniswapv2router(address: EthereumAddress.fromHex(routerAddress), client: web3Client);
     List<EthereumAddress> path = [];
     for (var i = 0; i < pathString.length; i++) {
       path.add(EthereumAddress.fromHex(pathString[i]));
     }
     if (path.isEmpty) {
-      return Future<List<BigInt>>.value([BigInt.from(pow(10, decimals))]);
+      return Future<List<BigInt>>.value([BigInt.from(pow(10, decimals))]).then((value) => value[value.length - 1]);
     }
-    return router.getAmountsOut$2(BigInt.from(pow(10, decimals)), path, BigInt.from(30));
+    return router.getAmountsOut$2(BigInt.from(pow(10, decimals)), path, BigInt.from(30)).then((value) => value[value.length - 1]);
   }
 
   static BigInt decodeToBigInt(List<int> magnitude) {

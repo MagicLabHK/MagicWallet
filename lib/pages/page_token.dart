@@ -9,7 +9,7 @@ import '../widgets/card_chain_token_balance.dart';
 import '../widgets/text_list_sub_heading.dart';
 
 class TokenTransferPage extends StatefulWidget {
-  final int _chainId;
+  final String _chainId;
   final String _chainName;
   final String _chainIconUrl;
   final String _tokenAddress;
@@ -73,7 +73,7 @@ class _TokenTransferPageState extends State<TokenTransferPage> {
 
     if (_transactionHashList.length > 0) {
       for (String transactionHash in _transactionHashList) {
-        widgetList.add(TransactionHistoryCard(transactionHash, widget._tokenDecimals, widget._tokenAddress));
+        widgetList.add(TransactionHistoryCard(transactionHash, widget._tokenDecimals, widget._tokenAddress, widget._chainName));
       }
     } else {
       widgetList.add(SizedBox(

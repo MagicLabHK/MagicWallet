@@ -38,7 +38,7 @@ class _HomePageState extends State<HomePage> {
       TotalBalanceCard(_tokenBalanceStreamController),
     ];
     for (var chain in _chainTokenList) {
-      int chainId = chain["chain_id"];
+      String chainId = chain["chain_id"];
       String chainName = chain["chain_name"];
       String chainIconUrl = chain["chain_icon_url"];
       widgetList.add(ListSubHeadingText(chainName + " Assets"));

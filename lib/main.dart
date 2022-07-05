@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:magic_wallet/pages/page_home.dart';
 import 'package:magic_wallet/pages/page_settings.dart';
 import 'package:magic_wallet/pages/page_staking.dart';
+import 'package:magic_wallet/chain_wrapper/near_wrapper.dart';
 
 
 void main() => runApp(const MyApp());
