@@ -1,10 +1,12 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:magic_wallet/dialogs/dialog_transfer_token.dart';
+import 'package:magic_wallet/dialogs/dialog_web3_transfer_token.dart';
 import 'package:magic_wallet/utils/secure_storage.dart';
 import 'package:magic_wallet/widgets/card_transaction_history.dart';
 
+import '../dialogs/dialog_near_transfer_token.dart';
+import '../utils/constant.dart';
 import '../widgets/card_chain_token_balance.dart';
 import '../widgets/text_list_sub_heading.dart';
 
@@ -110,19 +112,50 @@ class _TokenTransferPageState extends State<TokenTransferPage> {
                     context: context,
                     isScrollControlled: true,
                     builder: (BuildContext context) {
-                      return TransferTokenDialog(
-                        widget._chainId,
-                        widget._chainName,
-                        widget._chainIconUrl,
-                        widget._tokenAddress,
-                        widget._tokenSymbol,
-                        widget._tokenName,
-                        widget._tokenDecimals,
-                        widget._tokenIconUrl,
-                        widget._routerAddress,
-                        widget._path,
-                        widget._priceDecimals,
-                      );
+                      switch (widget._chainName.toLowerCase()) {
+                        case Constant.chainMoonriver:
+                          return Web3TransferTokenDialog(
+                            widget._chainId,
+                            widget._chainName,
+                            widget._chainIconUrl,
+                            widget._tokenAddress,
+                            widget._tokenSymbol,
+                            widget._tokenName,
+                            widget._tokenDecimals,
+                            widget._tokenIconUrl,
+                            widget._routerAddress,
+                            widget._path,
+                            widget._priceDecimals,
+                          );
+                        case Constant.chainNear:
+                          return NearTransferTokenDialog(
+                            widget._chainId,
+                            widget._chainName,
+                            widget._chainIconUrl,
+                            widget._tokenAddress,
+                            widget._tokenSymbol,
+                            widget._tokenName,
+                            widget._tokenDecimals,
+                            widget._tokenIconUrl,
+                            widget._routerAddress,
+                            widget._path,
+                            widget._priceDecimals,
+                          );
+                        default:
+                          return Web3TransferTokenDialog(
+                            widget._chainId,
+                            widget._chainName,
+                            widget._chainIconUrl,
+                            widget._tokenAddress,
+                            widget._tokenSymbol,
+                            widget._tokenName,
+                            widget._tokenDecimals,
+                            widget._tokenIconUrl,
+                            widget._routerAddress,
+                            widget._path,
+                            widget._priceDecimals,
+                          );
+                      }
                     },
                   );
                 },

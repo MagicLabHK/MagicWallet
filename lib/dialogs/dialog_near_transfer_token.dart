@@ -8,7 +8,7 @@ import '../chain_wrapper/chain_wrapper.dart';
 import '../utils/custom_keyboard.dart';
 import '../utils/logger.dart';
 
-class TransferTokenDialog extends StatefulWidget {
+class NearTransferTokenDialog extends StatefulWidget {
   final String _chainId;
   final String _chainName;
   final String _chainIconUrl;
@@ -21,28 +21,22 @@ class TransferTokenDialog extends StatefulWidget {
   final List<String> _path;
   final int _priceDecimals;
 
-  const TransferTokenDialog(this._chainId, this._chainName, this._chainIconUrl, this._tokenAddress, this._tokenSymbol, this._tokenName, this._tokenDecimals,
+  const NearTransferTokenDialog(this._chainId, this._chainName, this._chainIconUrl, this._tokenAddress, this._tokenSymbol, this._tokenName, this._tokenDecimals,
       this._tokenIconUrl, this._routerAddress, this._path, this._priceDecimals,
       {Key? key})
       : super(key: key);
 
   @override
-  State<TransferTokenDialog> createState() => _TransferTokenDialogState();
+  State<NearTransferTokenDialog> createState() => _NearTransferTokenDialogState();
 }
 
-class _TransferTokenDialogState extends State<TransferTokenDialog> {
+class _NearTransferTokenDialogState extends State<NearTransferTokenDialog> {
   final _formKey = GlobalKey<FormState>();
   final _toAddressFieldController = TextEditingController();
   final _amountFieldController = TextEditingController();
-  final _gasPriceTextFieldController = TextEditingController();
-  final _gasLimitTextFieldController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    ChainWrapper.getNetworkGasPrice(widget._chainName)
-        .then((value) => _gasPriceTextFieldController.text = (value.getInWei / BigInt.from(pow(10, 9))).toStringAsFixed(4));
-    SecureStorage.getWalletAddress().then((walletAddress) => ChainWrapper.estimateGas(widget._chainName, walletAddress!, walletAddress, widget._tokenAddress)
-        .then((gasLimit) => _gasLimitTextFieldController.text = gasLimit.toString()));
     _amountFieldController.text = "0";
 
     return Container(
@@ -95,37 +89,7 @@ class _TransferTokenDialogState extends State<TransferTokenDialog> {
                                 hintText: "Amount",
                                 fillColor: Colors.white70),
                           )),
-                      Padding(
-                          padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-                          child: TextFormField(
-                            controller: _gasPriceTextFieldController,
-                            keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                            focusNode: CustomKeyboard.sendTokenGasPriceNode,
-                            decoration: InputDecoration(
-                                suffixText: "Gwei",
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                ),
-                                filled: true,
-                                hintStyle: TextStyle(color: Colors.grey[800]),
-                                hintText: "Gas Price",
-                                fillColor: Colors.white70),
-                          )),
-                      Padding(
-                          padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-                          child: TextFormField(
-                            controller: _gasLimitTextFieldController,
-                            keyboardType: TextInputType.number,
-                            focusNode: CustomKeyboard.sendTokenGasNode,
-                            decoration: InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                ),
-                                filled: true,
-                                hintStyle: TextStyle(color: Colors.grey[800]),
-                                hintText: "Gas Limit",
-                                fillColor: Colors.white70),
-                          )),
+
                       Padding(
                           padding: const EdgeInsets.fromLTRB(20, 20, 0, 0),
                           child: Row(children: [
@@ -142,18 +106,14 @@ class _TransferTokenDialogState extends State<TransferTokenDialog> {
                                   );
                                   Navigator.pop(context);
 
-                                  Future.wait<String?>([SecureStorage.getWalletAddress(), SecureStorage.getWalletPrivateKey()])
-                                      .then((wallet) => ChainWrapper.sendToken(
+                                  Future.wait<String?>([SecureStorage.getNearAccountId(), SecureStorage.getNearPrivateKey()])
+                                      .then((wallet) => ChainWrapper.sendNearToken(
                                           widget._chainName,
                                           wallet[0]!,
                                           wallet[1]!,
                                           _toAddressFieldController.text,
-                                          widget._tokenAddress,
                                           BigInt.from(double.parse(_amountFieldController.text) * pow(10, widget._tokenDecimals)),
-                                          BigInt.from(int.parse(_gasLimitTextFieldController.text)),
-                                          BigInt.from(double.parse(_gasPriceTextFieldController.text) * pow(10, 9)),
-                                          // from Wei to GWei
-                                          int.parse(widget._chainId)))
+                                          ))
                                       .then((txHash) {
                                     SecureStorage.addTransactionRecord(widget._chainId.toString(), widget._tokenAddress, txHash);
                                     Logger.printConsoleLog(txHash);

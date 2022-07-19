@@ -1,7 +1,6 @@
 import 'package:ethereum_addresses/ethereum_addresses.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:magic_wallet/chain_wrapper/chain_wrapper.dart';
-import 'package:magic_wallet/chain_wrapper/web3_wrapper.dart';
 import 'dart:convert';
 
 class SecureStorage {
@@ -20,12 +19,20 @@ class SecureStorage {
     return storage.read(key: "wallet_private_key");
   }
 
-  static updateNearWalletAccount(String nearWalletId) {
-    storage.write(key: "near_wallet_account", value: nearWalletId);
+  static updateNearWalletAccount(String privateKey, String accountId) {
+    if (privateKey.contains(":")) {
+      privateKey = privateKey.split(":")[1];
+    }
+    storage.write(key: "near_private_key", value: privateKey);
+    storage.write(key: "near_account_id", value: accountId);
   }
 
-  static Future<String?> getNearWalletAccount() {
-    return storage.read(key: "near_wallet_account");
+  static Future<String?> getNearAccountId() {
+    return storage.read(key: "near_account_id");
+  }
+
+  static Future<String?> getNearPrivateKey() {
+    return storage.read(key: "near_private_key");
   }
 
   static addTransactionRecord(String chainId, String tokenAddress, String txHash) {

@@ -40,6 +40,13 @@ dependencies:
   flutter_secure_storage: ^5.0.2
   ethereum_addresses: ^1.0.2
   keyboard_actions: ^3.4.7
+  fast_base58: ^0.2.1
+  cryptography: ^2.0.5
+  crypto: ^3.0.2
+  bs58: ^1.0.2
+  pinenacl: ^0.5.0
+  binary: ^3.0.1
+  hex: ^0.2.0
 
 dev_dependencies:
   flutter_test:

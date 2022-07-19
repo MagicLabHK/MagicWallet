@@ -103,4 +103,13 @@ class ChainWrapper {
         throw Exception(["sendToken(senderAddress, privateKey, toAddress, tokenAddress, amount, gas, gasPrice, chainId) is not implemented for $chainName"]);
     }
   }
+
+  static Future<String> sendNearToken(String chainName, String senderId, String senderPrivateKey, receiverId, BigInt amount) {
+    switch (chainName.toLowerCase()) {
+      case Constant.chainNear:
+        return NearWrapper.sendToken(senderId, senderPrivateKey, receiverId, amount);
+      default:
+        throw Exception(["sendToken(senderAddress, privateKey, toAddress, tokenAddress, amount, gas, gasPrice, chainId) is not implemented for $chainName"]);
+    }
+  }
 }

@@ -9,6 +9,7 @@ class SettingsPage extends StatelessWidget {
   SettingsPage({Key? key}) : super(key: key);
   static const TextStyle optionStyle = TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   final privateKeyFieldController = TextEditingController();
+  final nearAccountIdFieldController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -48,14 +49,24 @@ class SettingsPage extends StatelessWidget {
             ),
             SettingsTile(
               leading: Icon(Icons.key),
-              title: Text('Near Wallet Account'),
+              title: const Text('Near Wallet Account'),
               onPressed: (BuildContext context) {
                 showDialog(context: context, builder: (BuildContext context) => AlertDialog(
                   title: const Text('Near Wallet Account'),
-                  content: TextField(
-                    controller: privateKeyFieldController,
-                    decoration: InputDecoration(hintText: 'Enter Near Wallet Account'),
-                    maxLength: 64,
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextField(
+                        controller: nearAccountIdFieldController,
+                        decoration: const InputDecoration(hintText: 'Enter Near Account ID'),
+                        maxLength: 64,
+                      ),
+                      TextField(
+                        controller: privateKeyFieldController,
+                        decoration: const InputDecoration(hintText: 'Enter Near Account Private Key'),
+                        maxLength: 96,
+                      )
+                    ],
                   ),
                   actions: <Widget>[
                     TextButton(
@@ -65,7 +76,7 @@ class SettingsPage extends StatelessWidget {
                     TextButton(
                       onPressed: () {
                         log(privateKeyFieldController.text);
-                        SecureStorage.updateNearWalletAccount(privateKeyFieldController.text);
+                        SecureStorage.updateNearWalletAccount(privateKeyFieldController.text, nearAccountIdFieldController.text);
                         Navigator.pop(context, 'OK');
                       },
                       child: const Text('OK'),
