@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:http/http.dart';
 import 'package:magic_wallet/abi/erc20.g.dart';
 import 'package:magic_wallet/abi/uniswapv2router.g.dart';
+import 'package:magic_wallet/data_structure/ui_transaction.dart';
 import 'package:magic_wallet/utils/secure_storage.dart';
 import 'package:web3dart/crypto.dart';
 import 'package:web3dart/web3dart.dart';
@@ -69,6 +70,18 @@ class Web3Wrapper {
 
   static Future<TransactionReceipt?> getTransactionReceipt(String transaction_hash) {
     return web3Client.getTransactionReceipt(transaction_hash);
+  }
+
+  static Future<UITransaction> getTransactionInfoByHash(String transactionHash, String tokenAddress) async{
+    var transactionInformation = await web3Client.getTransactionByHash(transactionHash);
+    var transactionReceipt = await web3Client.getTransactionReceipt(transactionHash);
+    Map<String, dynamic> transactionInput;
+    if (tokenAddress != "0x0000000000000000000000000000000000000000") {
+      transactionInput = Web3Wrapper.parseTokenTransferInputData(transactionInformation.input);
+    } else {
+      transactionInput = {"toAddress": transactionInformation.to?.hexEip55, "amount": transactionInformation.value.getInWei};
+    }
+    return UITransaction(transactionInput['toAddress'], transactionInput['amount'], transactionReceipt!.status!);
   }
 
   static Map<String, dynamic> parseTokenTransferInputData(Uint8List input) {

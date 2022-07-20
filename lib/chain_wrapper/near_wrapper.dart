@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:pinenacl/ed25519.dart';
 import 'dart:math';
 
+import '../data_structure/ui_transaction.dart';
 import '../utils/secure_storage.dart';
 
 class NearWrapper {
@@ -53,7 +54,7 @@ class NearWrapper {
     var signingKey = SigningKey.fromValidBytes(decodedRaw);
     binaryWriter.writePublicKey(signingKey.publicKey.asTypedList);
     binaryWriter.writeNonce(nonce + 1);
-    binaryWriter.writeString(signerId);
+    binaryWriter.writeString(toId);
     binaryWriter.writeBlockHash(base58.decode(blockHash));
     binaryWriter.writeTransfer(amount);
     var serializedTx = binaryWriter.toUint8List();
@@ -109,6 +110,25 @@ class NearWrapper {
     return response.then((value) {
       return jsonDecode(value.body)['result']['nonce'];
     });
+  }
+
+  static Future<UITransaction> getTransactionInfoByHash(String transactionHash, String tokenAddress, String senderId) async {
+    final response = await http.post(
+      Uri.parse('https://rpc.mainnet.near.org'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(<String, dynamic>{
+        "jsonrpc": "2.0",
+        "id": "",
+        "method": "tx",
+        "params": [transactionHash, senderId]
+      }),
+    );
+    final responseJson = jsonDecode(response.body);
+
+    return UITransaction(
+        responseJson['result']["transaction"]["receiver_id"], BigInt.parse(responseJson['result']["transaction"]["actions"][0]["Transfer"]["deposit"]), true);
   }
 }
 

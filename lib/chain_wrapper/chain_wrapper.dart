@@ -5,6 +5,8 @@ import 'package:magic_wallet/chain_wrapper/web3_wrapper.dart';
 import 'package:magic_wallet/utils/constant.dart';
 import 'package:web3dart/web3dart.dart';
 
+import '../data_structure/ui_transaction.dart';
+
 
 class ChainWrapper {
   static Future<dynamic> getTokenBalance(String chainName, String walletAddress, String tokenAddress) {
@@ -62,6 +64,17 @@ class ChainWrapper {
     switch (chainName.toLowerCase()) {
       case Constant.chainMoonriver:
         return Web3Wrapper.getTransactionReceipt(transactionHash);
+      default:
+        throw Exception(["getTransactionReceipt(transactionHash) is not implemented for $chainName"]);
+    }
+  }
+
+  static Future<UITransaction> getTransactionInfoByHash(String chainName, String transactionHash, String tokenAddress, {String? senderId}){
+    switch (chainName.toLowerCase()) {
+      case Constant.chainMoonriver:
+        return Web3Wrapper.getTransactionInfoByHash(transactionHash, tokenAddress);
+      case Constant.chainNear:
+        return NearWrapper.getTransactionInfoByHash(transactionHash, tokenAddress, senderId!);
       default:
         throw Exception(["getTransactionReceipt(transactionHash) is not implemented for $chainName"]);
     }
