@@ -6,7 +6,6 @@ import 'package:magic_wallet/utils/secure_storage.dart';
 
 import '../chain_wrapper/chain_wrapper.dart';
 import '../utils/custom_keyboard.dart';
-import '../utils/logger.dart';
 
 class NearTransferTokenDialog extends StatefulWidget {
   final String _chainId;
@@ -33,12 +32,10 @@ class NearTransferTokenDialog extends StatefulWidget {
 class _NearTransferTokenDialogState extends State<NearTransferTokenDialog> {
   final _formKey = GlobalKey<FormState>();
   final _toAddressFieldController = TextEditingController();
-  final _amountFieldController = TextEditingController();
+  final _amountFieldController = TextEditingController(text: "0");
 
   @override
   Widget build(BuildContext context) {
-    _amountFieldController.text = "0";
-
     return Container(
         height: MediaQuery.of(context).size.height * 0.8,
         color: Colors.white,
@@ -89,7 +86,6 @@ class _NearTransferTokenDialogState extends State<NearTransferTokenDialog> {
                                 hintText: "Amount",
                                 fillColor: Colors.white70),
                           )),
-
                       Padding(
                           padding: const EdgeInsets.fromLTRB(20, 20, 0, 0),
                           child: Row(children: [
@@ -108,15 +104,14 @@ class _NearTransferTokenDialogState extends State<NearTransferTokenDialog> {
 
                                   Future.wait<String?>([SecureStorage.getNearAccountId(), SecureStorage.getNearPrivateKey()])
                                       .then((wallet) => ChainWrapper.sendNearToken(
-                                          widget._chainName,
-                                          wallet[0]!,
-                                          wallet[1]!,
-                                          _toAddressFieldController.text,
-                                          BigInt.from(double.parse(_amountFieldController.text) * pow(10, widget._tokenDecimals)),
+                                            widget._chainName,
+                                            wallet[0]!,
+                                            wallet[1]!,
+                                            _toAddressFieldController.text,
+                                            BigInt.from(double.parse(_amountFieldController.text) * pow(10, widget._tokenDecimals)),
                                           ))
                                       .then((txHash) {
                                     SecureStorage.addTransactionRecord(widget._chainId.toString(), widget._tokenAddress, txHash);
-                                    Logger.printConsoleLog(txHash);
                                   });
                                 },
                                 elevation: 2.0,

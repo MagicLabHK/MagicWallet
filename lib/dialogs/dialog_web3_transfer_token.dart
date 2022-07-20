@@ -33,7 +33,7 @@ class Web3TransferTokenDialog extends StatefulWidget {
 class _Web3TransferTokenDialogState extends State<Web3TransferTokenDialog> {
   final _formKey = GlobalKey<FormState>();
   final _toAddressFieldController = TextEditingController();
-  final _amountFieldController = TextEditingController();
+  final _amountFieldController = TextEditingController(text: "0");
   final _gasPriceTextFieldController = TextEditingController();
   final _gasLimitTextFieldController = TextEditingController();
 
@@ -43,7 +43,6 @@ class _Web3TransferTokenDialogState extends State<Web3TransferTokenDialog> {
         .then((value) => _gasPriceTextFieldController.text = (value.getInWei / BigInt.from(pow(10, 9))).toStringAsFixed(4));
     SecureStorage.getWalletAddress().then((walletAddress) => ChainWrapper.estimateGas(widget._chainName, walletAddress!, walletAddress, widget._tokenAddress)
         .then((gasLimit) => _gasLimitTextFieldController.text = gasLimit.toString()));
-    _amountFieldController.text = "0";
 
     return Container(
         height: MediaQuery.of(context).size.height * 0.8,
