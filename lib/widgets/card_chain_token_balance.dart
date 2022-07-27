@@ -6,6 +6,7 @@ import 'package:magic_wallet/pages/page_token.dart';
 import 'package:web3dart/web3dart.dart';
 
 import '../chain_wrapper/chain_wrapper.dart';
+import '../utils/logger.dart';
 
 class ChainTokenBalanceCard extends StatefulWidget {
   final String _chainId;
@@ -101,6 +102,9 @@ class _ChainTokenBalanceCardState extends State<ChainTokenBalanceCard> {
                         } else {
                           _tokenBalance = snapshot.data!;
                         }
+                      }
+                      if(snapshot.hasError){
+                        Logger.printConsoleLog(snapshot.error.toString());
                       }
                       return Column(
                         mainAxisAlignment: MainAxisAlignment.end,

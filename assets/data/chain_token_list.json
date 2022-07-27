@@ -79,12 +79,28 @@
         "token_symbol": "Near",
         "token_decimals": 24,
         "token_icon_url": "assets/token_icons/near.png",
-        "price_router": "0xAA30eF758139ae4a7f798112902Bf6d65612045f",
+        "price_router": "",
         "price_path": [
-          "0x98878B06940aE243284CA214f92Bb71a2b032B8A",
-          "0xE3F5a90F9cb311505cd691a46596599aA1A0AD7D"
         ],
         "price_decimals": 6
+      }
+    ]
+  },
+  {
+    "chain_id": "waves",
+    "chain_name": "Waves",
+    "chain_icon_url": "assets/token_icons/waves.png",
+    "token_list": [
+      {
+        "token_address": "0x0000000000000000000000000000000000000000",
+        "token_name": "Waves",
+        "token_symbol": "Waves",
+        "token_decimals": 8,
+        "token_icon_url": "assets/token_icons/waves.png",
+        "price_router": "",
+        "price_path": [
+        ],
+        "price_decimals": 8
       }
     ]
   }

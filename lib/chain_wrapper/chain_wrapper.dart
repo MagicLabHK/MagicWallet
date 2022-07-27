@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:magic_wallet/chain_wrapper/near_wrapper.dart';
+import 'package:magic_wallet/chain_wrapper/waves.wrapper.dart';
 import 'package:magic_wallet/chain_wrapper/web3_wrapper.dart';
 import 'package:magic_wallet/utils/constant.dart';
 import 'package:web3dart/web3dart.dart';
@@ -15,6 +16,8 @@ class ChainWrapper {
         return Web3Wrapper.getTokenBalance(walletAddress, tokenAddress);
       case Constant.chainNear:
         return NearWrapper.getTokenBalance(walletAddress);
+      case Constant.chainWaves:
+        return WavesWrapper.getTokenBalance(walletAddress);
       default:
         throw Exception(["getTokenBalance(walletAddress, tokenAddress) is not implemented for $chainName"]);
     }
@@ -26,6 +29,8 @@ class ChainWrapper {
         return Web3Wrapper.getTokenPrice(routerAddress, pathString, decimals);
       case Constant.chainNear:
         return NearWrapper.getTokenPrice(routerAddress, pathString, decimals);
+      case Constant.chainWaves:
+        return WavesWrapper.getTokenPrice(routerAddress, pathString, decimals);
       default:
         throw Exception(["getTokenPrice(routerAddress, pathString, decimals) is not implemented for $chainName"]);
     }
@@ -46,6 +51,8 @@ class ChainWrapper {
         return Web3Wrapper.getTokenBalanceByStorageWalletAddress(tokenAddress);
       case Constant.chainNear:
         return NearWrapper.getTokenBalanceByStorageWalletAddress(tokenAddress);
+      case Constant.chainWaves:
+        return WavesWrapper.getTokenBalanceByStorageWalletAddress(tokenAddress);
       default:
         throw Exception(["getTokenBalanceByStorageWalletAddress(String tokenAddress) is not implemented for $chainName"]);
     }

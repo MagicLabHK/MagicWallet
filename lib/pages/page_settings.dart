@@ -10,6 +10,7 @@ class SettingsPage extends StatelessWidget {
   static const TextStyle optionStyle = TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   final privateKeyFieldController = TextEditingController();
   final nearAccountIdFieldController = TextEditingController();
+  final wavesAccountSeedFieldController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +38,6 @@ class SettingsPage extends StatelessWidget {
                     ),
                     TextButton(
                       onPressed: () {
-                        log(privateKeyFieldController.text);
                         SecureStorage.updatePrivateKey(Constant.chainMoonriver, privateKeyFieldController.text);
                         Navigator.pop(context, 'OK');
                       },
@@ -75,8 +75,38 @@ class SettingsPage extends StatelessWidget {
                     ),
                     TextButton(
                       onPressed: () {
-                        log(privateKeyFieldController.text);
                         SecureStorage.updateNearWalletAccount(privateKeyFieldController.text, nearAccountIdFieldController.text);
+                        Navigator.pop(context, 'OK');
+                      },
+                      child: const Text('OK'),
+                    ),
+                  ],
+                ));
+              },
+            ),
+            SettingsTile(
+              leading: const Icon(Icons.key),
+              title: const Text('Waves Wallet Seed'),
+              onPressed: (BuildContext context) {
+                showDialog(context: context, builder: (BuildContext context) => AlertDialog(
+                  title: const Text('Waves Wallet Seed'),
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextField(
+                        controller: wavesAccountSeedFieldController,
+                        decoration: const InputDecoration(hintText: 'Enter Waves Account Seed')
+                      ),
+                    ],
+                  ),
+                  actions: <Widget>[
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, 'Cancel'),
+                      child: const Text('Cancel'),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        SecureStorage.updateWavesSeed(wavesAccountSeedFieldController.text);
                         Navigator.pop(context, 'OK');
                       },
                       child: const Text('OK'),
